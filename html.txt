@@ -1,0 +1,61 @@
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <3d 4 all>3D STL Viewer</3d forall>
+    <style>
+        body { background: #111; color: white; font-family: Arial; text-align: center; }
+        #viewer { width: 100%; height: 500px; }
+    </style>
+</head>
+<body>
+
+<h1>Upload and View STL Files</h1>
+
+<input type="file" id="fileInput" accept=".stl">
+<div id="viewer"></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/STLLoader.js"></script>
+
+<script>
+    const viewer = document.getElementById("viewer");
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, viewer.clientWidth / viewer.clientHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer();
+    renderer.setSize(viewer.clientWidth, viewer.clientHeight);
+    viewer.appendChild(renderer.domElement);
+
+    const light = new THREE.DirectionalLight(0xffffff, 1);
+    light.position.set(1, 1, 1).normalize();
+    scene.add(light);
+
+    camera.position.z = 100;
+
+    function animate() {
+        requestAnimationFrame(animate);
+        renderer.render(scene, camera);
+    }
+    animate();
+
+    document.getElementById("fileInput").addEventListener("change", function(event) {
+        const file = event.target.files[0];
+        const reader = new FileReader();
+
+        reader.onload = function(e) {
+            const loader = new THREE.STLLoader();
+            const geometry = loader.parse(e.target.result);
+            const material = new THREE.MeshPhongMaterial({ color: 0x00ff00 });
+            const mesh = new THREE.Mesh(geometry, material);
+
+            scene.add(mesh);
+        };
+
+        reader.readAsArrayBuffer(file);
+    });
+</script>
+
+</body>
+</html>
